@@ -16,7 +16,7 @@ RUN . /build/venv/bin/activate && \
 
 # https://developer.nvidia.com/cuda-gpus
 # for a rtx 2060: ARG TORCH_CUDA_ARCH_LIST="7.5"
-ARG TORCH_CUDA_ARCH_LIST="3.5;5.0;6.0;6.1;7.0;7.5;8.0;8.6+PTX"
+ARG TORCH_CUDA_ARCH_LIST="7.5"
 RUN . /build/venv/bin/activate && \
     python3 setup_cuda.py bdist_wheel -d .
 
@@ -34,7 +34,7 @@ RUN mkdir /app
 
 WORKDIR /app
 
-ARG WEBUI_VERSION
+ARG WEBUI_VERSION="latest"
 RUN test -n "${WEBUI_VERSION}" && git reset --hard ${WEBUI_VERSION} || echo "Using provided webui source"
 
 RUN virtualenv /app/venv
@@ -61,8 +61,10 @@ COPY requirements.txt /app/requirements.txt
 RUN . /app/venv/bin/activate && \
     pip3 install -r requirements.txt
 
+
 RUN cp /app/venv/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cuda118.so /app/venv/lib/python3.10/site-packages/bitsandbytes/libbitsandbytes_cpu.so
 
 COPY . /app/
+RUN cp -r /app/venv/lib/python3.10/site-packages/* /usr/local/lib/python3.10/dist-packages/
 ENV CLI_ARGS=""
-CMD . /app/venv/bin/activate && python3 server.py ${CLI_ARGS}
+CMD python3 server.py ${CLI_ARGS}

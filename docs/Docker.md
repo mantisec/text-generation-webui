@@ -111,7 +111,7 @@ https://github.com/oobabooga/text-generation-webui/pull/530#issuecomment-1484235
 ### 7. prepare .env file
 edit .env values to your needs.
 ```bash
-cp .env.example .env
+cp .env .env
 nano .env
 ```
 
